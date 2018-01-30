@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroSln", "MacroSln\MacroSln.csproj", "{543FD139-7A18-4291-BCBD-1D1CEB01F0BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroSln", "MacroSln\MacroSln.csproj", "{543FD139-7A18-4291-BCBD-1D1CEB01F0BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nugit-MacroSystem", "nugit-MacroSystem", "{87441458-F4D4-4767-8808-E3EB8EC08A16}"
 EndProject
