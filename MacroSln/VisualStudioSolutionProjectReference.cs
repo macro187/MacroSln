@@ -22,12 +22,12 @@ MacroSln
 /// </remarks>
 /// 
 public class
-VisualStudioProjectReference
+VisualStudioSolutionProjectReference
 {
 
 
 public
-VisualStudioProjectReference(
+VisualStudioSolutionProjectReference(
     VisualStudioSolution solution,
     string id,
     string typeId,

@@ -170,13 +170,13 @@ ProjectConfigurationsEndLineNumber
 /// Project references
 /// </summary>
 ///
-public IEnumerable<VisualStudioProjectReference>
+public IEnumerable<VisualStudioSolutionProjectReference>
 ProjectReferences
 {
     get { return _projectReferences; }
 }
 
-IList<VisualStudioProjectReference>
+IList<VisualStudioSolutionProjectReference>
 _projectReferences;
 
 
@@ -188,7 +188,7 @@ _projectReferences;
 /// Solution folders are implemented as a special kind of project reference
 /// </remarks>
 ///
-public IEnumerable<VisualStudioProjectReference>
+public IEnumerable<VisualStudioSolutionProjectReference>
 SolutionFolders
 {
     get { return ProjectReferences.Where(p => p.TypeId == VisualStudioProjectTypeIds.SolutionFolder); }
@@ -199,13 +199,13 @@ SolutionFolders
 /// Nested project entries
 /// </summary>
 ///
-public IEnumerable<VisualStudioNestedProject>
+public IEnumerable<VisualStudioSolutionNestedProject>
 NestedProjects
 {
     get { return _nestedProjects; }
 }
 
-IList<VisualStudioNestedProject>
+IList<VisualStudioSolutionNestedProject>
 _nestedProjects;
 
 
@@ -227,13 +227,13 @@ _solutionConfigurations;
 /// Project configurations
 /// </summary>
 ///
-public IEnumerable<VisualStudioProjectConfiguration>
+public IEnumerable<VisualStudioSolutionProjectConfiguration>
 ProjectConfigurations
 {
     get { return _projectConfigurations; }
 }
 
-IList<VisualStudioProjectConfiguration>
+IList<VisualStudioSolutionProjectConfiguration>
 _projectConfigurations;
 
 
@@ -245,7 +245,7 @@ _projectConfigurations;
 /// No project with specified <paramref name="id"/> in solution
 /// </exception>
 ///
-public VisualStudioProjectReference
+public VisualStudioSolutionProjectReference
 GetProjectReference(string id)
 {
     Guard.NotNull(id, nameof(id));
@@ -264,7 +264,7 @@ GetProjectReference(string id)
 /// Add a project reference to the solution
 /// </summary>
 ///
-public VisualStudioProjectReference
+public VisualStudioSolutionProjectReference
 AddProjectReference(string typeId, string name, string location, string id)
 {
     Guard.NotNull(typeId, nameof(typeId));
@@ -274,8 +274,8 @@ AddProjectReference(string typeId, string name, string location, string id)
 
     _lines.Insert(
         GlobalStartLineNumber,
-        VisualStudioProjectReference.FormatStart(typeId, name, location, id),
-        VisualStudioProjectReference.FormatEnd());
+        VisualStudioSolutionProjectReference.FormatStart(typeId, name, location, id),
+        VisualStudioSolutionProjectReference.FormatEnd());
 
     Load();
 
@@ -287,7 +287,7 @@ AddProjectReference(string typeId, string name, string location, string id)
 /// Delete a project reference
 /// </summary>
 ///
-public void DeleteProjectReference(VisualStudioProjectReference projectReference)
+public void DeleteProjectReference(VisualStudioSolutionProjectReference projectReference)
 {
     Guard.NotNull(projectReference, nameof(projectReference));
 
@@ -302,7 +302,7 @@ public void DeleteProjectReference(VisualStudioProjectReference projectReference
 /// </summary>
 ///
 public void
-DeleteProjectReferenceAndRelated(VisualStudioProjectReference projectReference)
+DeleteProjectReferenceAndRelated(VisualStudioSolutionProjectReference projectReference)
 {
     Guard.NotNull(projectReference, nameof(projectReference));
 
@@ -376,7 +376,7 @@ AddNestedProject(string childProjectId, string parentProjectId)
 
     _lines.Insert(
         NestedProjectsEndLineNumber,
-        "\t\t" + VisualStudioNestedProject.Format(childProjectId, parentProjectId));
+        "\t\t" + VisualStudioSolutionNestedProject.Format(childProjectId, parentProjectId));
 
     Load();
 }
@@ -387,7 +387,7 @@ AddNestedProject(string childProjectId, string parentProjectId)
 /// </summary>
 ///
 public void
-DeleteNestedProject(VisualStudioNestedProject nestedProject)
+DeleteNestedProject(VisualStudioSolutionNestedProject nestedProject)
 {
     Guard.NotNull(nestedProject, nameof(nestedProject));
 
@@ -401,7 +401,7 @@ DeleteNestedProject(VisualStudioNestedProject nestedProject)
 /// Add a solution folder to the solution
 /// </summary>
 ///
-public VisualStudioProjectReference
+public VisualStudioSolutionProjectReference
 AddSolutionFolder(string name)
 {
     return AddSolutionFolder(name, Guid.NewGuid().ToString("B").ToUpperInvariant());
@@ -412,7 +412,7 @@ AddSolutionFolder(string name)
 /// Add a solution folder to the solution
 /// </summary>
 ///
-public VisualStudioProjectReference
+public VisualStudioSolutionProjectReference
 AddSolutionFolder(string name, string id)
 {
     Guard.Required(name, nameof(name));
@@ -432,7 +432,7 @@ AddSolutionFolder(string name, string id)
 /// </remarks>
 ///
 public void
-DeleteSolutionFolder(VisualStudioProjectReference solutionFolder)
+DeleteSolutionFolder(VisualStudioSolutionProjectReference solutionFolder)
 {
     Guard.NotNull(solutionFolder, nameof(solutionFolder));
 
@@ -451,7 +451,7 @@ DeleteSolutionFolder(VisualStudioProjectReference solutionFolder)
 /// </summary>
 ///
 public void
-DeleteSolutionFolderContents(VisualStudioProjectReference solutionFolder)
+DeleteSolutionFolderContents(VisualStudioSolutionProjectReference solutionFolder)
 {
     Guard.NotNull(solutionFolder, nameof(solutionFolder));
 
@@ -549,7 +549,7 @@ AddProjectConfiguration(
 
     _lines.Insert(
         lineNumber,
-        "\t\t" + VisualStudioProjectConfiguration.Format(
+        "\t\t" + VisualStudioSolutionProjectConfiguration.Format(
             projectId,
             projectConfiguration,
             property,
@@ -564,7 +564,7 @@ AddProjectConfiguration(
 /// </summary>
 ///
 public void
-DeleteProjectConfiguration(VisualStudioProjectConfiguration configuration)
+DeleteProjectConfiguration(VisualStudioSolutionProjectConfiguration configuration)
 {
     Guard.NotNull(configuration, nameof(configuration));
 
@@ -593,10 +593,10 @@ Load()
     SolutionConfigurationsEndLineNumber = -1;
     ProjectConfigurationsStartLineNumber = -1;
     ProjectConfigurationsEndLineNumber = -1;
-    _projectReferences = new List<VisualStudioProjectReference>();
-    _nestedProjects = new List<VisualStudioNestedProject>();
+    _projectReferences = new List<VisualStudioSolutionProjectReference>();
+    _nestedProjects = new List<VisualStudioSolutionNestedProject>();
     _solutionConfigurations = new HashSet<string>();
-    _projectConfigurations = new List<VisualStudioProjectConfiguration>();
+    _projectConfigurations = new List<VisualStudioSolutionProjectConfiguration>();
 
     int lineNumber = -1;
     int projectReferenceStartLineNumber = -1;
@@ -623,7 +623,7 @@ Load()
             if (line.Trim() == "EndProject")
             {
                 _projectReferences.Add(
-                    new VisualStudioProjectReference(
+                    new VisualStudioSolutionProjectReference(
                         this,
                         id,
                         typeId,
@@ -659,7 +659,7 @@ Load()
                     line);
 
             _nestedProjects.Add(
-                new VisualStudioNestedProject(
+                new VisualStudioSolutionNestedProject(
                     match.Groups[1].Value,
                     match.Groups[2].Value,
                     lineNumber));
@@ -709,7 +709,7 @@ Load()
                     line);
 
             _projectConfigurations.Add(
-                new VisualStudioProjectConfiguration(
+                new VisualStudioSolutionProjectConfiguration(
                     match.Groups[1].Value,
                     match.Groups[2].Value,
                     match.Groups[3].Value,

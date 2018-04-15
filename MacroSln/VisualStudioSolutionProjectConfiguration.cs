@@ -22,12 +22,12 @@ MacroSln
 /// </remarks>
 /// 
 public class
-VisualStudioProjectConfiguration
+VisualStudioSolutionProjectConfiguration
 {
 
 
 public
-VisualStudioProjectConfiguration(
+VisualStudioSolutionProjectConfiguration(
     string projectId,
     string projectConfiguration,
     string property,

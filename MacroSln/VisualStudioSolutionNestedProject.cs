@@ -22,12 +22,12 @@ MacroSln
 /// </remarks>
 /// 
 public class
-VisualStudioNestedProject
+VisualStudioSolutionNestedProject
 {
 
 
 public
-VisualStudioNestedProject(string childProjectId, string parentProjectId, int lineNumber)
+VisualStudioSolutionNestedProject(string childProjectId, string parentProjectId, int lineNumber)
 {
     Guard.NotNull(childProjectId, nameof(childProjectId));
     Guard.NotNull(parentProjectId, nameof(parentProjectId));
