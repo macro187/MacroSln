@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using IOPath = System.IO.Path;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MacroGuards;
-using MacroCollections;
+using MacroExceptions;
 
 
 namespace
@@ -15,7 +14,7 @@ MacroSln
 
 
 /// <summary>
-/// A Visual Studio project (<c>.csproj</c>) file
+/// A 2017-era "SDK" style <c>.csproj</c> file
 /// </summary>
 ///
 /// <remarks>
@@ -39,7 +38,7 @@ VisualStudioProject
 public
 VisualStudioProject(string path)
 {
-    Guard.Required(path, nameof(path));
+    Guard.NotNull(path, nameof(path));
 
     Path = path;
     Name = IOPath.GetFileNameWithoutExtension(path);
@@ -84,44 +83,22 @@ IList<string>
 _lines;
 
 
-/// <summary>
-/// Project type guids
-/// </summary>
-///
-public ISet<string>
-ProjectTypeGuids
+public IReadOnlyList<VisualStudioProjectGroup>
+Groups
 {
-    get { return _projectTypeGuids; }
+    get { return _groups; }
 }
 
-ISet<string>
-_projectTypeGuids;
+List<VisualStudioProjectGroup>
+_groups;
 
 
-/// <summary>
-/// Type of output assembly e.g. Library or Exe
-/// </summary>
-///
-public string
-OutputType
-{
-    get;
-    private set;
-}
+int
+ProjectBeginLineNumber;
 
 
-/// <summary>
-/// Compile items
-/// </summary>
-///
-public ISet<string>
-CompileItems
-{
-    get { return _compileItems; }
-}
-
-ISet<string>
-_compileItems;
+int
+ProjectEndLineNumber;
 
 
 /// <summary>
@@ -131,11 +108,15 @@ _compileItems;
 void
 Load()
 {
-    _projectTypeGuids = new HashSet<string>();
-    _compileItems = new HashSet<string>();
-    OutputType = "";
+    _groups = new List<VisualStudioProjectGroup>();
+    ProjectBeginLineNumber = -1;
+    ProjectEndLineNumber = -1;
+
     int lineNumber = -1;
     Match match;
+    int propertyGroupLineNumber = -1;
+    List<VisualStudioProjectProperty> properties = null;
+    int itemGroupLineNumber = -1;
     foreach (var line in Lines)
     {
         lineNumber++;
@@ -144,35 +125,113 @@ Load()
         // Ignore blank lines and comments
         //
         if (string.IsNullOrWhiteSpace(line)) continue;
-        if (line.Trim().StartsWith("#", StringComparison.Ordinal)) continue;
 
-        //
-        // ProjectTypeGuids
-        //
-        match = Regex.Match(line, "^\\s*<ProjectTypeGuids>([^<]+)</ProjectTypeGuids>\\s*$");
-        if (match.Success)
+        if (propertyGroupLineNumber > -1)
         {
-            _projectTypeGuids.AddRange(match.Groups[1].Value.Split(';'));
+
+            //
+            // </PropertyGroup>
+            //
+            match = Regex.Match(line, "^\\s*</PropertyGroup>\\s*$");
+            if (match.Success)
+            {
+                _groups.Add(
+                    new VisualStudioProjectPropertyGroup(
+                        properties,
+                        propertyGroupLineNumber,
+                        lineNumber));
+                properties = null;
+                propertyGroupLineNumber = -1;
+                continue;
+            }
+
+            //
+            // <Name>Value</Name>
+            //
+            match = Regex.Match(line, "^\\s*<([^/>]+)>(.*)</\\1>\\s*$");
+            if (match.Success)
+            {
+                properties.Add(
+                    new VisualStudioProjectProperty(
+                        match.Groups[1].ToString(),
+                        match.Groups[2].ToString(),
+                        lineNumber));
+                continue;
+            }
+
+            continue;
+        }
+
+        if (itemGroupLineNumber > -1)
+        {
+
+            //
+            // </ItemGroup>
+            //
+            match = Regex.Match(line, "^\\s*</ItemGroup>\\s*$");
+            if (match.Success)
+            {
+                _groups.Add(
+                    new VisualStudioProjectItemGroup(
+                        itemGroupLineNumber,
+                        lineNumber));
+                itemGroupLineNumber = -1;
+                continue;
+            }
+
             continue;
         }
 
         //
-        // OutputType
+        // <PropertyGroup>
         //
-        match = Regex.Match(line, "^\\s*<OutputType>([^<]+)</OutputType>\\s*$");
+        match = Regex.Match(line, "^\\s*<PropertyGroup[> ].*$");
         if (match.Success)
         {
-            OutputType = match.Groups[1].Value;
+            propertyGroupLineNumber = lineNumber;
+            properties = new List<VisualStudioProjectProperty>();
             continue;
         }
 
         //
-        // <Compile> item
+        // <ItemGroup>
         //
-        match = Regex.Match(line, "^\\s*<Compile Include=\"([^\"]+)\"\\s*/?>\\s*$");
+        match = Regex.Match(line, "^\\s*<ItemGroup[> ].*$");
         if (match.Success)
         {
-            _compileItems.Add(match.Groups[1].Value);
+            itemGroupLineNumber = lineNumber;
+            continue;
+        }
+
+        //
+        // <Project>
+        //
+        match = Regex.Match(line, "^\\s*<Project Sdk=\"Microsoft.NET.Sdk\">\\s*$");
+        if (match.Success)
+        {
+            if (ProjectBeginLineNumber > -1)
+                throw new TextFileParseException(
+                    "Multiple <Project> elements encountered",
+                    Path,
+                    lineNumber,
+                    line);
+            ProjectBeginLineNumber = lineNumber;
+            continue;
+        }
+
+        //
+        // </Project>
+        //
+        match = Regex.Match(line, "^\\s*</Project>\\s*$");
+        if (match.Success)
+        {
+            if (ProjectEndLineNumber > -1)
+                throw new TextFileParseException(
+                    "Multiple </Project> elements encountered",
+                    Path,
+                    lineNumber,
+                    line);
+            ProjectEndLineNumber = lineNumber;
             continue;
         }
 
@@ -180,6 +239,20 @@ Load()
         // Nothing special
         //
     }
+
+    if (ProjectBeginLineNumber > -1)
+        throw new TextFileParseException(
+            "No <Project> element in file",
+            Path,
+            lineNumber,
+            "");
+
+    if (ProjectEndLineNumber > -1)
+        throw new TextFileParseException(
+            "No </Project> element in file",
+            Path,
+            lineNumber,
+            "");
 }
 
 

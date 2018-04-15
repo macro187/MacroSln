@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using MacroSystem;
 using MacroGuards;
-
+using System;
 
 namespace
 MacroSln
@@ -83,8 +83,6 @@ LineCount { get; private set; }
 /// <summary>
 /// Load the project referred to by this reference
 /// </summary>
-///
-/// <seealso cref="VisualStudioProject(string)"/>
 ///
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Microsoft.Design",
