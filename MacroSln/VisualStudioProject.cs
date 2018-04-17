@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using MacroGuards;
 using MacroExceptions;
+using MacroCollections;
 
 
 namespace
@@ -99,6 +100,79 @@ ProjectBeginLineNumber;
 
 int
 ProjectEndLineNumber;
+
+
+/// <summary>
+/// Get the value of a project property
+/// </summary>
+///
+/// <returns>
+/// The value of the project property, if present
+/// - OR -
+/// An empty string, if not present
+/// </returns>
+///
+public string
+GetProperty(string name)
+{
+    Guard.Required(name, nameof(name));
+    return
+        Groups
+            .OfType<VisualStudioProjectPropertyGroup>()
+            .SelectMany(g => g.Properties)
+            .Where(p => p.Name == name)
+            .Select(p => p.Value)
+            .FirstOrDefault() ?? "";
+}
+
+
+/// <summary>
+/// Set the value of a project property
+/// </summary>
+///
+/// <remarks>
+/// If the property is already present, its value is changed.  Otherwise, the property is added, along with a containing
+/// PropertyGroup if necessary.
+/// </remarks>
+///
+public void
+SetProperty(string name, string value)
+{
+    Guard.Required(name, nameof(name));
+    Guard.NotNull(value, nameof(value));
+
+    if (!Groups.OfType<VisualStudioProjectPropertyGroup>().Any())
+    {
+        _lines.Insert(
+            ProjectBeginLineNumber + 1,
+            "",
+            "  " + VisualStudioProjectPropertyGroup.FormatBegin(),
+            "  " + VisualStudioProjectPropertyGroup.FormatEnd(),
+            "");
+        Load();
+    }
+
+    var insertAt = Groups.OfType<VisualStudioProjectPropertyGroup>().First().EndLineNumber;
+
+    var existingProp =
+        Groups
+            .OfType<VisualStudioProjectPropertyGroup>()
+            .SelectMany(g => g.Properties)
+            .Where(p => p.Name == name)
+            .FirstOrDefault();
+
+    if (existingProp != null)
+    {
+        insertAt = existingProp.LineNumber;
+        _lines.RemoveAt(insertAt);
+    }
+
+    _lines.Insert(
+        insertAt,
+        "    " + VisualStudioProjectProperty.Format(name, value));
+
+    Load();
+}
 
 
 /// <summary>
@@ -240,14 +314,14 @@ Load()
         //
     }
 
-    if (ProjectBeginLineNumber > -1)
+    if (ProjectBeginLineNumber == -1)
         throw new TextFileParseException(
             "No <Project> element in file",
             Path,
             lineNumber,
             "");
 
-    if (ProjectEndLineNumber > -1)
+    if (ProjectEndLineNumber == -1)
         throw new TextFileParseException(
             "No </Project> element in file",
             Path,
