@@ -16,31 +16,6 @@ VisualStudioProjectGroup
 {
 
 
-internal
-VisualStudioProjectGroup(
-    string name,
-    int beginLineNumber,
-    int endLineNumber)
-{
-    Guard.Required(name, nameof(name));
-    Name = name;
-    BeginLineNumber = beginLineNumber;
-    EndLineNumber = endLineNumber;
-}
-
-
-public string
-Name { get; private set; }
-
-
-public int
-BeginLineNumber { get; private set; }
-
-
-public int
-EndLineNumber { get; private set; }
-
-
 public static string
 FormatBegin(string name)
 {
@@ -55,6 +30,31 @@ FormatEnd(string name)
     Guard.NotNull(name, nameof(name));
     return StringExtensions.FormatInvariant("</{0}>", name);
 }
+
+
+internal
+VisualStudioProjectGroup(
+    string name,
+    int beginLineNumber,
+    int endLineNumber)
+{
+    Guard.Required(name, nameof(name));
+    Name = name;
+    BeginLineNumber = beginLineNumber;
+    EndLineNumber = endLineNumber;
+}
+
+
+public string
+Name { get; }
+
+
+public int
+BeginLineNumber { get; }
+
+
+public int
+EndLineNumber { get; }
 
 
 public override string
