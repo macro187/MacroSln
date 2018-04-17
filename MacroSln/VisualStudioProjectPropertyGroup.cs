@@ -18,13 +18,31 @@ VisualStudioProjectPropertyGroup
 {
 
 
+public static string
+FormatBegin()
+{
+    return FormatBegin(GroupName);
+}
+
+
+public static string
+FormatEnd()
+{
+    return FormatEnd(GroupName);
+}
+
+
+const string
+GroupName = "PropertyGroup";
+
+
 internal
 VisualStudioProjectPropertyGroup(
     IEnumerable<VisualStudioProjectProperty> properties,
     int beginLineNumber,
     int endLineNumber
 )
-    : base("PropertyGroup", beginLineNumber, endLineNumber)
+    : base(GroupName, beginLineNumber, endLineNumber)
 {
     Guard.NotNull(properties, nameof(properties));
     Properties = properties.ToList();
