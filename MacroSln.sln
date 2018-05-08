@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroSln", "MacroSln\MacroS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nugit-MacroCollections", "nugit-MacroCollections", "{295DAF19-36D1-4E1D-A1D5-A949A85BA6AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroCollections", "..\MacroCollections\MacroCollections\MacroCollections.csproj", "{A28ABFA7-7C10-4BAB-B75C-1304F3FB5656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroCollections", "..\MacroCollections\MacroCollections\MacroCollections.csproj", "{A28ABFA7-7C10-4BAB-B75C-1304F3FB5656}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nugit-MacroExceptions", "nugit-MacroExceptions", "{B7B9C0C9-8B13-4AF7-BD60-E0CEA2BD89DF}"
 EndProject
