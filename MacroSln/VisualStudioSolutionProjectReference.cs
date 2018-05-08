@@ -2,6 +2,7 @@
 using MacroSystem;
 using MacroGuards;
 using System;
+using MacroIO;
 
 namespace
 MacroSln
@@ -78,6 +79,24 @@ LineNumber { get; private set; }
 
 public int
 LineCount { get; private set; }
+
+
+/// <summary>
+/// The full, absolute path to the referenced project file
+/// </summary>
+///
+public string
+AbsoluteLocation =>
+    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Solution.Path), Location));
+
+
+/// <summary>
+/// Whether the referenced project file is under the same directory subtree as the solution
+/// </summary>
+///
+public bool
+IsLocal =>
+    PathExtensions.IsDescendantOf(AbsoluteLocation, Path.GetDirectoryName(Solution.Path));
 
 
 /// <summary>
