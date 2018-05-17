@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using MacroSystem;
 using MacroGuards;
-using System;
 using MacroIO;
+using System.Linq;
+using System.Collections.Generic;
+
 
 namespace
 MacroSln
@@ -100,6 +102,24 @@ IsLocal =>
 
 
 /// <summary>
+/// Specially escaped name/path of this project used by MSBuild in project-specific targets
+/// </summary>
+///
+/// <remarks>
+/// https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-build-specific-targets-in-solutions-by-using-msbuild-exe
+/// </remarks>
+///
+public string
+MSBuildTargetName =>
+    string.Join(
+        "\\",
+        GetNestingPath()
+            .Reverse()
+            .Select(p => p.Name)
+            .Select(name => EscapeMSBuildTargetNameComponent(name)));
+
+
+/// <summary>
 /// Load the project referred to by this reference
 /// </summary>
 ///
@@ -151,6 +171,32 @@ ToString()
         FormatStart(TypeId, Name, Location, Id));
 }
 
+
+IEnumerable<VisualStudioSolutionProjectReference>
+GetNestingPath()
+{
+    for (var p = this; p != null; p = p.GetNestingParent()) yield return p;
+}
+
+
+VisualStudioSolutionProjectReference
+GetNestingParent() =>
+    Solution.NestedProjects
+        .Where(p => p.ChildProjectId == Id)
+        .SelectMany(np => Solution.ProjectReferences.Where(p => p.Id == np.ParentProjectId))
+        .SingleOrDefault();
+
+string
+EscapeMSBuildTargetNameComponent(string component) =>
+    component
+        .Replace('%', '_')
+        .Replace('$', '_')
+        .Replace('@', '_')
+        .Replace(';', '_')
+        .Replace('.', '_')
+        .Replace('(', '_')
+        .Replace(')', '_')
+        .Replace('\'', '_');
 
 }
 }
