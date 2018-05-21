@@ -94,6 +94,17 @@ List<VisualStudioProjectGroup>
 _groups;
 
 
+/// <summary>
+/// All framework monikers specifed in either the <c>TargetFramework</c> or <c>TargetFrameworks</c> properties
+/// </summary>
+///
+public IEnumerable<string> AllTargetFrameworks =>
+    new []{ GetProperty("TargetFramework") }
+        .Concat(GetProperty("TargetFrameworks").Split(';'))
+        .Select(s => s.Trim())
+        .Where(s => s != "");
+
+
 int
 ProjectBeginLineNumber;
 
