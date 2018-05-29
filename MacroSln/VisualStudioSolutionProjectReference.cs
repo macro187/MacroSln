@@ -89,7 +89,12 @@ LineCount { get; private set; }
 ///
 public string
 AbsoluteLocation =>
-    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Solution.Path), Location));
+    Path.GetFullPath(
+        Path.Combine(
+            Path.GetDirectoryName(Solution.Path),
+            Location
+                .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+                .Replace('\\', Path.DirectorySeparatorChar)));
 
 
 /// <summary>
@@ -130,13 +135,7 @@ MSBuildTargetName =>
 public VisualStudioProject
 GetProject()
 {
-    var path =
-        Path.GetFullPath(
-            Path.Combine(
-                Path.GetDirectoryName(Solution.Path),
-                Location));
-
-    return new VisualStudioProject(path);
+    return new VisualStudioProject(AbsoluteLocation);
 }
 
 
