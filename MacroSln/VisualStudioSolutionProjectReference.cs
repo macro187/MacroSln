@@ -147,6 +147,8 @@ FormatStart(string typeId, string name, string location, string id)
     Guard.NotNull(location, nameof(location));
     Guard.NotNull(id, nameof(id));
 
+    location = location.Replace('/', '\\');
+
     return StringExtensions.FormatInvariant(
         "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
         typeId, name, location, id);
