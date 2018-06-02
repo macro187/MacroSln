@@ -2,11 +2,12 @@
 using System.IO;
 using IOPath = System.IO.Path;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using MacroGuards;
 using MacroExceptions;
 using MacroCollections;
+using MacroIO;
+using MacroSystem;
 
 
 namespace
@@ -349,19 +350,9 @@ public void
 Save()
 {
     //
-    // Visual Studio writes .csproj files in UTF-8 with BOM and Windows-style line endings
+    // The dotnet tool writes .csproj files with Windows line endings and no UTF-8 BOM
     //
-    var encoding = new UTF8Encoding(true);
-    var newline = "\r\n";
-
-    using (var f = new StreamWriter(Path, false, encoding))
-    {
-        f.NewLine = newline;
-        foreach (var line in Lines)
-        {
-            f.WriteLine(line);
-        }
-    }
+    FileExtensions.RewriteAllLines(Path, Lines, LineEnding.CRLF, false);
 }
 
 

@@ -25,6 +25,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nugit-MacroSystem", "nugit-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroSystem", "..\MacroSystem\MacroSystem\MacroSystem.csproj", "{7C2D7D47-3718-4D2B-BE57-2276C06E7F34}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{305A6AA3-3E90-48FC-ADD3-CC3B8811FEA6}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.nugit = .nugit
+		license.txt = license.txt
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

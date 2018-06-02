@@ -9,7 +9,7 @@ using MacroSystem;
 using MacroGuards;
 using MacroCollections;
 using MacroExceptions;
-
+using MacroIO;
 
 namespace
 MacroSln
@@ -809,19 +809,9 @@ public void
 Save()
 {
     //
-    // Visual Studio writes .sln files in UTF-8 with BOM and Windows-style line endings
+    // The dotnet tool writes .sln files with Windows line endings and a UTF-8 bom
     //
-    var encoding = new UTF8Encoding(true);
-    var newline = "\r\n";
-
-    using (var f = new StreamWriter(Path, false, encoding))
-    {
-        f.NewLine = newline;
-        foreach (var line in Lines)
-        {
-            f.WriteLine(line);
-        }
-    }
+    FileExtensions.RewriteAllLines(Path, Lines, LineEnding.CRLF, true);
 }
 
 
