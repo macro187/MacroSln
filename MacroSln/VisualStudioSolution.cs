@@ -651,7 +651,7 @@ Load()
                 continue;
             }
 
-            match = Regex.Match(line, "(\\S+) = (\\S+)");
+            match = Regex.Match(line, @"(\S+) = (\S+)");
             if (!match.Success)
                 throw new TextFileParseException(
                     "Expected '{guid} = {guid}'",
@@ -678,7 +678,7 @@ Load()
                 continue;
             }
 
-            match = Regex.Match(line, "^\\s*([^=]+) = (.+)$");
+            match = Regex.Match(line, @"^\s*([^=]+) = (.+)$");
             if (!match.Success)
                 throw new TextFileParseException(
                     "Expected '{configuration} = {configuration}'",
@@ -701,7 +701,7 @@ Load()
                 continue;
             }
 
-            match = Regex.Match(line, "^\\s*([^.]+)\\.([^.]+)\\.(.+) = (.+)$");
+            match = Regex.Match(line, @"^\s*([^.]+)\.([^.]+)\.(.+) = (.+)$");
             if (!match.Success)
                 throw new TextFileParseException(
                     "Expected '{guid}.{configuration}.{property} = {configuration}'",
@@ -722,7 +722,7 @@ Load()
         //
         // Starting a project reference
         //
-        match = Regex.Match(line, "Project\\(\"([^\"]*)\"\\) = \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\"");
+        match = Regex.Match(line, @"Project\(""([^""]*)""\) = ""([^""]*)"", ""([^""]*)"", ""([^""]*)""");
         if (match.Success)
         {
             if (projectReferenceStartLineNumber >= 0)

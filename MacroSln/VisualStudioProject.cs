@@ -265,7 +265,7 @@ Load()
             //
             // </PropertyGroup>
             //
-            match = Regex.Match(line, "^\\s*</PropertyGroup>\\s*$");
+            match = Regex.Match(line, @"^\s*</PropertyGroup>\s*$");
             if (match.Success)
             {
                 _groups.Add(
@@ -281,7 +281,7 @@ Load()
             //
             // <Name>Value</Name>
             //
-            match = Regex.Match(line, "^\\s*<([^/>]+)>(.*)</\\1>\\s*$");
+            match = Regex.Match(line, @"^\s*<([^/>]+)>(.*)</\1>\s*$");
             if (match.Success)
             {
                 properties.Add(
@@ -301,7 +301,7 @@ Load()
             //
             // </ItemGroup>
             //
-            match = Regex.Match(line, "^\\s*</ItemGroup>\\s*$");
+            match = Regex.Match(line, @"^\s*</ItemGroup>\s*$");
             if (match.Success)
             {
                 _groups.Add(
@@ -318,7 +318,7 @@ Load()
         //
         // <PropertyGroup>
         //
-        match = Regex.Match(line, "^\\s*<PropertyGroup[> ].*$");
+        match = Regex.Match(line, @"^\s*<PropertyGroup[> ].*$");
         if (match.Success)
         {
             propertyGroupLineNumber = lineNumber;
@@ -329,7 +329,7 @@ Load()
         //
         // <ItemGroup>
         //
-        match = Regex.Match(line, "^\\s*<ItemGroup[> ].*$");
+        match = Regex.Match(line, @"^\s*<ItemGroup[> ].*$");
         if (match.Success)
         {
             itemGroupLineNumber = lineNumber;
@@ -339,7 +339,8 @@ Load()
         //
         // <Project>
         //
-        if (line.Trim().Equals(ProjectBegin, StringComparison.Ordinal))
+        match = Regex.Match(line, @"^\s*<Project Sdk=""Microsoft.NET.Sdk"">\s*$");
+        if (match.Success)
         {
             if (ProjectBeginLineNumber > -1)
                 throw new TextFileParseException(
@@ -354,7 +355,8 @@ Load()
         //
         // </Project>
         //
-        if (line.Trim().Equals(ProjectEnd, StringComparison.Ordinal))
+        match = Regex.Match(line, @"^\s*</Project>\s*$");
+        if (match.Success)
         {
             if (ProjectEndLineNumber > -1)
                 throw new TextFileParseException(
