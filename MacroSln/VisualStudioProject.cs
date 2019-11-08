@@ -9,7 +9,6 @@ using MacroCollections;
 using MacroIO;
 using MacroSystem;
 using System.Text;
-using System;
 
 namespace
 MacroSln
@@ -30,16 +29,8 @@ VisualStudioProject
 {
 
 
-private const string
-ProjectBegin = "<Project Sdk=\"Microsoft.NET.Sdk\">";
-
-
-private const string
-ProjectEnd = "</Project>";
-
-
 /// <summary>
-/// Create a new, empty <c>.csproj</c> file
+/// Create a new, empty <c>.csproj</c> file that uses the .NET Core SDK
 /// </summary>
 ///
 /// <param name="path">
@@ -62,13 +53,46 @@ ProjectEnd = "</Project>";
 public static VisualStudioProject
 Create(string path)
 {
+    return Create(path, VisualStudioProjectSdk.DotNetCore);
+}
+
+
+/// <summary>
+/// Create a new, empty <c>.csproj</c> file
+/// </summary>
+///
+/// <param name="path">
+/// The path to the <c>.csproj</c> file to create
+/// </param>
+///
+/// <param name="sdk">
+/// The .Net Core SDK to be used by the project
+/// </param>
+///
+/// <returns>
+/// The newly-created <see cref="VisualStudioProject"/>
+/// </returns>
+///
+/// <remarks>
+/// If a file already exists at <paramref name="path"/>, it is completely replaced with no consideration given to its
+/// existing encoding, line-ending, or BOM conventions.
+///
+/// This method can throw IO-related exceptions, see
+/// <see cref="File.WriteAllLines(string, IEnumerable{string}, Encoding)"/> and
+/// <see cref="File.ReadLines(string)"/> for details.
+/// </remarks>
+///
+public static VisualStudioProject
+Create(string path, VisualStudioProjectSdk sdk)
+{
     Guard.NotNull(path, nameof(path));
+    Guard.NotNull(sdk, nameof(sdk));
 
     File.WriteAllLines(
         path,
         new [] {
-            ProjectBegin,
-            ProjectEnd,
+            $"<Project Sdk=\"{sdk.Id}\">",
+            $"</Project>",
         },
         new UTF8Encoding(false));
 
@@ -339,7 +363,7 @@ Load()
         //
         // <Project>
         //
-        match = Regex.Match(line, @"^\s*<Project Sdk=""Microsoft.NET.Sdk"">\s*$");
+        match = Regex.Match(line, @"^\s*<Project Sdk=""Microsoft.NET.Sdk(?:\.[^.]+)*"">\s*$");
         if (match.Success)
         {
             if (ProjectBeginLineNumber > -1)
