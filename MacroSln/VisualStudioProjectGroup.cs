@@ -1,4 +1,4 @@
-﻿using MacroSystem;
+using MacroSystem;
 using MacroGuards;
 
 

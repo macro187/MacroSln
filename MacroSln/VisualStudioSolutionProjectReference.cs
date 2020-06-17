@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using MacroSystem;
 using MacroGuards;
 using MacroIO;

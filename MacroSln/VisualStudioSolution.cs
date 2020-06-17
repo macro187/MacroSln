@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using static System.FormattableString;
 using System.Collections.Generic;
 using System.IO;
