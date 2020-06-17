@@ -1,0 +1,40 @@
+root = true
+[*]
+guidelines = 120
+
+[*.csproj]
+end_of_line = lf
+charset = utf-8
+
+[*.cs]
+end_of_line = lf
+charset = utf-8
+
+[.editorconfig]
+end_of_line = lf
+charset = utf-8
+
+[.gitattributes]
+end_of_line = lf
+charset = utf-8
+
+[.gitignore]
+end_of_line = lf
+charset = utf-8
+
+[*.md]
+end_of_line = lf
+charset = utf-8
+
+[.nugit]
+end_of_line = lf
+charset = utf-8
+
+[.produce]
+end_of_line = lf
+charset = utf-8
+
+[*.sln]
+charset = utf-8
+end_of_line = crlf
+
